@@ -1,0 +1,32 @@
+flowchart TD
+  subgraph UI["UI layer (Task #02)"]
+    main["main.tsx"]
+    App["App.tsx<br/>state + parsing + validation hint<br/>+ result panel markup + time inputs"]
+    RoomCard["components/RoomCard.tsx"]
+    RoomFilters["components/RoomFilters.tsx<br/>(own inline notice markup)"]
+    RoomEmptyState["components/RoomEmptyState.tsx"]
+    Timeline["components/Timeline.tsx<br/>(own 0..1440 candidate check)"]
+  end
+  subgraph Rules["Rules / logic"]
+    availability["availability.ts<br/>validateInterval, overlaps,<br/>checkAvailability, checkRoomAvailability<br/>(literals 120 and 1440)"]
+    roomFilters["roomFilters.ts<br/>parseAttendees, filters,<br/>getEquipmentOptions, reconcileSelection"]
+  end
+  subgraph Data["Data"]
+    sampleData["sampleData.ts<br/>CURRENT_TIME + bookings + room definitions<br/>+ per-room attach (all in one file)"]
+  end
+  types["types.ts"]
+
+  main --> App
+  App --> RoomCard
+  App --> RoomFilters
+  App --> RoomEmptyState
+  App --> Timeline
+  App --> availability
+  App --> roomFilters
+  App --> sampleData
+  Timeline --> availability
+  availability --> types
+  roomFilters --> types
+  sampleData --> types
+  RoomCard --> types
+  App --> types

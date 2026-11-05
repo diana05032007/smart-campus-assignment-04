@@ -1,0 +1,56 @@
+flowchart TD
+  subgraph UI["UI layer: presentation only"]
+    main["main.tsx"]
+    App["App.tsx<br/>layout + wiring"]
+    RoomCard["RoomCard"]
+    RoomFilters["RoomFilters"]
+    RoomEmptyState["RoomEmptyState"]
+    Timeline["Timeline"]
+    TimeField["TimeField (new)"]
+    ResultPanel["ResultPanel (new)"]
+    Notice["Notice (new)"]
+  end
+  subgraph State["UI state"]
+    hook["hooks/useRoomAvailability.ts (new)<br/>React state + view model"]
+  end
+  subgraph Pure["Pure logic (no React)"]
+    intervalInput["intervalInput.ts (new)<br/>parseMinutes, isDrawableInterval,<br/>evaluateRequest, IDLE_RESULT"]
+    availability["availability.ts<br/>validateInterval, overlaps,<br/>checkAvailability, checkRoomAvailability"]
+    roomFilters["roomFilters.ts<br/>filters + findSelectableRoom,<br/>toggleEquipment, resolveFilterChange"]
+    constants["constants.ts (new)<br/>MAX_BOOKING_MINUTES, MINUTES_IN_DAY,<br/>CURRENT_TIME"]
+  end
+  subgraph Data["Data layer"]
+    bookings["data/bookings.ts (new)<br/>frozen original bookings"]
+    roomCatalog["data/roomCatalog.ts (new)<br/>room definitions, attachBookings"]
+    sampleData["sampleData.ts<br/>re-export barrel"]
+  end
+  types["types.ts"]
+
+  main --> App
+  App --> hook
+  App --> RoomCard
+  App --> RoomFilters
+  App --> RoomEmptyState
+  App --> Timeline
+  App --> TimeField
+  App --> ResultPanel
+  App --> Notice
+  App --> roomCatalog
+  App --> constants
+  RoomFilters --> Notice
+  hook --> intervalInput
+  hook --> roomFilters
+  intervalInput --> availability
+  intervalInput --> constants
+  availability --> constants
+  Timeline --> intervalInput
+  Timeline --> constants
+  TimeField --> constants
+  roomCatalog --> bookings
+  sampleData --> roomCatalog
+  sampleData --> bookings
+  sampleData --> constants
+  availability --> types
+  roomFilters --> types
+  roomCatalog --> types
+  bookings --> types
